@@ -6,5 +6,5 @@
 *.db
 .DS_Store
 .sass-cache
-config. js
+config.js
 node_modules/
