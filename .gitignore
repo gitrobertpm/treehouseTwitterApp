@@ -4,3 +4,7 @@
 *.lk
 *.zip
 *.db
+.DS_Store
+.sass-cache
+config. js
+node_modules/
