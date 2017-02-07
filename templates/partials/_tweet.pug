@@ -1,0 +1,10 @@
+.app--tweet
+	form
+		.circle--fluid
+			.circle--fluid--cell.circle--fluid--primary.align-bottom.app--tweet--post
+				.app--avatar(style='background-image: url(' + timeline[0].user.profile_image_url + ')')
+					//img(src=timeline[0].user.profile_image_url)
+				textarea.circle--textarea--input(placeholder="What's happening?" id="tweet-textarea")
+				strong.app--tweet--char#tweet-char 140
+			.circle--fluid--cell.align-bottom
+				button.button-primary Tweet
