@@ -5,16 +5,9 @@
 				h3 Conversations with 
 					a(href="#") #{timeline[0].user.screen_name}
 				ul.app--message--conversation
-					each direct_message in direct_messages 
-						li.app--message
-							.app--avatar(style='background-image: url(' + direct_message.sender.profile_image_url + ')')
-								//img(src=direct_message.sender.profile_image_url)
-							p.app--message--text #{direct_message.text}
-							p.app--message--timestamp #{direct_message.created_at.slice(0,19)}
-					each sent_message in sent_messages
-						li.app--message--me
-							.app--avatar(style='background-image: url(' + sent_message.sender.profile_image_url + ')')
-								//img(src=sent_message.sender.profile_image_url)
-							p.app--message--text #{sent_message.text}
-							p.app--message--timestamp #{sent_message.created_at.slice(0,10)}
-		
+					each sorted_message in sorted_messages 
+						li(class=sorted_message.sender.name === "Robert Manolis" ? "app--message--me" : "app--message")
+							.app--avatar(style='background-image: url(' + sorted_message.sender.profile_image_url + ')')
+								//img(src=sorted_message.sender.profile_image_url)
+							p.app--message--text #{sorted_message.text}
+							p.app--message--timestamp #{sorted_message.created_at.slice(0,19)}

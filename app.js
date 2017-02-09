@@ -27,14 +27,15 @@
 	var timeline = {};
 	var direct_messages = {};
 	var sent_messages = {};
+	var sorted_messages = {};
 	
-	// HELPER FUNCTION FOR GETTING TWITTER DATA AND PASSING IT TO A CALLBACK FOR LATER USE
+	// HELPER FUNCTION FOR GETTING TWITTER DATA WITH A CALLBACK
 	function getData(callback) {
 		
 		// FOLLOWING
 		T.get('friends/list', function(err, data, response) {
 			if(err) {
-				throw error;
+				throw err;
 			} else {
 				friends = data.users;
 			}
@@ -43,7 +44,7 @@
 		// TWEETS
 		T.get('statuses/user_timeline', function(err, data, response) {
 			if(err) {
-				throw error;
+				throw err;
 			} else {
 				timeline = data;
 			}
@@ -52,7 +53,7 @@
 		// DIRECT MESAGES I'VE SENT
 		T.get('direct_messages', function(err, data, response) {
 			if(err) {
-				throw error;
+				throw err;
 			} else {
 				direct_messages = data;
 			}
@@ -61,7 +62,7 @@
 		// DIRECT MESAGES I'VE RECEIVED
 		T.get('direct_messages/sent', function(err, data, response) {
 			if(err) {
-				throw error;
+				throw err;
 			} else {
 				sent_messages = data;
 			} 
@@ -69,26 +70,51 @@
 		
 		callback();
 	}
+	
 
-	// RENDER DATA AND HANDLE ROUTES
+	// IF BROWSER IS POINTED AT ANYTHING BUT THE HOME ROUTE 
+	// REDIRECT TO NICE ERROR PAGE
+	// ELSE RENDER DATA
 	getData(function() {
-		app.get('/', function(req, res) {
+		app.get('/*', function(req, res) {
 			var path = req.path;	
-			res.render('index', {friends: friends, timeline: timeline, direct_messages: direct_messages, sent_messages: sent_messages});
-		});
-		
-		// IF BROWSER IS POINTED AT ANYTHING BUT THE HOME ROUTE 
-		// REDIRECT TO NICE ERROR PAGE
-		app.get('/:param?', function(req, res) {
-			var param = req.params.param;	
-			
-			if (param) {
+			if (path !== "/") {
+				
+				// RENDER ERROR PAGE
 				res.render("error", {timeline: timeline, isWrongPath: true});
+			} else {
+				// COMBINE SENT AND RECEIVED DIRECT MESSAGES
+				combineMessages(direct_messages, sent_messages, function() {
+					
+					// SORT MESSAGES CHRONOLIGICALLY
+					sortMessages(newArry, function() {
+						
+						// RENDER DATA
+						res.render('index', {friends: friends, timeline: timeline, direct_messages: direct_messages, sent_messages: sent_messages, sorted_messages: sorted_messages});
+					});
+				});
 			}
 		});
 	});
-
+	
+	// START SERVER
 	app.listen(3000, function() {
 		console.log("The frontend server is running on port 3000!");
 	});
+	
+	
+	// HELPER CALLBACK FUNCTIONS FOR COMBINING SENT AND RECEIVED DIRECT MESSAGES
+	// AND SORTING THEM CHRONOLIGICALLY
+	var newArry;
+	var sortedArry;
+	function combineMessages(arry1, arry2, callback) {
+		newArry = arry1.concat(arry2);
+		callback();
+	}
+	function sortMessages(arry, callback) {
+		sorted_messages = arry.sort(function(a, b) {
+			return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+		});
+		callback();
+	}
 })();
